@@ -18,12 +18,12 @@ const startApolloServer = async () => {
   await db(); // Establish a connection to the database using the db() function
 
 
-  const PORT = process.env.PORT || 3001;
-  const app = express();
+  const PORT = process.env.PORT || 3001; // Set the port to an environment variable or default to 3001
+  const app = express(); // Create an Express application
   
-  // Middleware to parse incoming URL-encoded form data (from forms, typically)
-  app.use(express.urlencoded({ extended: true }));
-  app.use(express.json());
+
+  app.use(express.urlencoded({ extended: true })); // Middleware to parse incoming URL-encoded form data (from forms, typically)
+  app.use(express.json());  // Middleware to parse incoming JSON request bodies (for APIs)
 
   // Apply ApolloServer middleware to handle GraphQL requests at the /graphql endpoint
   app.use('/graphql', expressMiddleware(server as any,
@@ -50,10 +50,3 @@ const startApolloServer = async () => {
 
 // Start the Apollo server by calling the startApolloServer function
 startApolloServer();
-
-
-
-
-
-
-
