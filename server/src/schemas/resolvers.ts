@@ -1,11 +1,13 @@
-import Book, { BookDocument } from '../models/Book.js';
+// @ts-ignore
+import BookInput from './typedefs'; // Used in saveBook mutation resolver
+import { BookDocument } from '../models/Book.js';
 import User, { UserDocument } from '../models/User.js';
 import { signToken, AuthenticationError } from '../utils/auth.js'; 
 
 const resolvers = {
     Query: {
         // Query to get a single user by ID or username
-        getSingleUser: async (_parent: any, { _id, username }: {_id?: string, username?: string}, context: any): Promise<UserDocument | null> => {
+        me: async (_parent: any, { _id, username }: {_id?: string, username?: string}, context: any): Promise<UserDocument | null> => {
             // Check if user is authenticated 
             if (context.user) {
 
@@ -32,7 +34,7 @@ const resolvers = {
 
     Mutation: {
         // Mutation to create a new user
-        createUser: async (_parent: any, args: any): Promise<{ token: string; user: UserDocument }> => {
+        addUser: async (_parent: any, args: any): Promise<{ token: string; user: UserDocument }> => {
             // Create a new user
             const user = await User.create(args);
 
@@ -48,9 +50,9 @@ const resolvers = {
         },
 
         // Mutation to login a user
-        login: async (_parent: any, { username, email, password }: any): Promise<{ token: string; user: UserDocument } | null>  => {
+        login: async (_parent: any, { email, password }: any): Promise<{ token: string; user: UserDocument } | null>  => {
             // Find user by username or email
-            const user = await User.findOne({ $or: [{ username }, { email }] });
+            const user = await User.findOne({ email });
 
             // if user is not found, throw an error
             if (!user) {
@@ -69,13 +71,13 @@ const resolvers = {
         },
 
         // Mutation to save a book
-        saveBook: async (_parent: any, { book }: { book: BookDocument }, context: any) => {
+        saveBook: async (_parent: any, { bookData }: { bookData: BookDocument }, context: any) => {
             // Check if user is authenticated
             if (context.user) {
                 // Update the user's saved books array
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id },
-                { $addToSet: { savedBooks: book } }, 
+                { $addToSet: { savedBooks: bookData } }, 
                 { new: true, runValidators: true }
               );
               return updatedUser; // Return the updated user
@@ -85,7 +87,7 @@ const resolvers = {
         },
 
         // Mutation to delete a book for the user's saved books array
-        deleteBook: async (_parent: any, { bookId }: { bookId: string }, context: any) => {
+        removeBook: async (_parent: any, { bookId }: { bookId: string }, context: any) => {
             // Check if user is authenticated
             if (context.user) {
             // Update the user's saved books array to remove the deleted book
