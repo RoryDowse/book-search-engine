@@ -13,7 +13,7 @@ const resolvers = {
                 const foundUser = await User.findOne({ 
                     $or: [
                         { _id: context.user._id}, 
-                        {_id }, 
+                        { _id }, 
                         { username }
                     ],
                 });
@@ -41,7 +41,7 @@ const resolvers = {
                 throw new AuthenticationError('Something went wrong while creating the user!');
             }
             // Sign a token for the created user
-            const token = signToken(user.username, user.email, user._id);
+            const token = signToken(user.username, user.password, user._id);
 
             // Return the token and user
             return { token, user };
