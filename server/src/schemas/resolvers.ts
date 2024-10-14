@@ -8,6 +8,8 @@ const resolvers = {
         getSingleUser: async (_parent: any, { _id, username }: {_id?: string, username?: string}, context: any): Promise<UserDocument | null> => {
             // Check if user is authenticated 
             if (context.user) {
+
+                // Find user by ID or username
                 const foundUser = await User.findOne({ 
                     $or: [
                         { _id: context.user._id}, 
@@ -16,11 +18,14 @@ const resolvers = {
                     ],
                 });
 
+                // If user is not found, throw an error
                 if (!foundUser) {
                     throw new AuthenticationError('Cannot find a user with this id!');
                 }
-                return foundUser;
+                return foundUser; // Return user if found
             }
+
+            // If user is not authenticated, throw an error
             throw new AuthenticationError('You need to be logged in!');
         },
 },
@@ -28,62 +33,78 @@ const resolvers = {
     Mutation: {
         // Mutation to create a new user
         createUser: async (_parent: any, args: any): Promise<{ token: string; user: UserDocument }> => {
+            // Create a new user
             const user = await User.create(args);
 
+            // if user is not created, throw an error
             if (!user) {
                 throw new AuthenticationError('Something went wrong while creating the user!');
             }
+            // Sign a token for the created user
             const token = signToken(user.username, user.email, user._id);
 
+            // Return the token and user
             return { token, user };
         },
 
         // Mutation to login a user
         login: async (_parent: any, { username, email, password }: any): Promise<{ token: string; user: UserDocument } | null>  => {
+            // Find user by username or email
             const user = await User.findOne({ $or: [{ username }, { email }] });
+
+            // if user is not found, throw an error
             if (!user) {
                 throw new AuthenticationError("Can't find this user.");
             }
-
+            // Check if password is correct
             const correctPw = await user.isCorrectPassword(password);
 
+            // if password is incorrect, throw an error
             if (!correctPw) {
                 throw new AuthenticationError('Wrong password!');
             }
+            // Sign a token for the user
             const token = signToken(user.username, user.email, user._id);
             return { token, user };
         },
 
         // Mutation to save a book
         saveBook: async (_parent: any, { book }: { book: BookDocument }, context: any) => {
+            // Check if user is authenticated
             if (context.user) {
+                // Update the user's saved books array
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id },
-                { $addToSet: { savedBooks: book } },
+                { $addToSet: { savedBooks: book } }, 
                 { new: true, runValidators: true }
               );
-              return updatedUser;
+              return updatedUser; // Return the updated user
             } 
+            // If user is not authenticated, throw an error
             throw new AuthenticationError('You need to be logged in!');
-    },
+        },
 
-    // Mutation to delete a book
-    deleteBook: async (_parent: any, { bookId }: { bookId: string }, context: any) => {
-        if (context.user) {
-        const updatedUser = await User.findOneAndUpdate(
-          { _id: context.user._id },
-          { $pull: { savedBooks: { bookId } } },
-          { new: true }
-        );
-        
-        if (!updatedUser) {
-          throw new AuthenticationError("Couldn't find user with this id!");
+        // Mutation to delete a book for the user's saved books array
+        deleteBook: async (_parent: any, { bookId }: { bookId: string }, context: any) => {
+            // Check if user is authenticated
+            if (context.user) {
+            // Update the user's saved books array to remove the deleted book
+            const updatedUser = await User.findOneAndUpdate(
+            { _id: context.user._id },
+            { $pull: { savedBooks: { bookId } } }, // Remove book by bookId
+            { new: true } // Return the updated user
+            );
+            
+            // If user is not found, throw an error
+            if (!updatedUser) {
+            throw new AuthenticationError("Couldn't find user with this id!");
+            }
+            return updatedUser; // Return the updated user
         }
-        return updatedUser;
-    }
-    throw new AuthenticationError('You need to be logged in!');
-},
-},
+        // If user is not authenticated, throw an error
+        throw new AuthenticationError('You need to be logged in!');
+        },
+    },
 };
 
 export default resolvers;
