@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
 import { Container, Card, Button, Row, Col } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
-import type { User } from '../models/User';
+import type { Book } from '../models/Book';
 
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_ME } from '../utils/queries'; 
@@ -57,7 +56,7 @@ const SavedBooks = () => {
             : 'You have no saved books!'}
         </h2>
         <Row>
-          {userData.savedBooks.map((book) => {
+          {userData.savedBooks.map((book: Book) => {
             return (
               <Col md='4'>
                 <Card key={book.bookId} border='dark'>

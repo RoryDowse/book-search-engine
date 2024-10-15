@@ -34,7 +34,13 @@ const SignupForm = ({}: { handleModalClose: () => void }) => {
     }
 
     try {
-      const { data } = await addUser({ variables: { userInput: userFormData } }); // await addUser(userFormData);
+      const { data } = await addUser({ 
+        variables: { 
+        username: userFormData.username, 
+        email: userFormData.email, 
+        password: userFormData.password
+      },
+    });
 
       if (!data || !data.addUser) {
         throw new Error('something went wrong!');
