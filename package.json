@@ -22,6 +22,7 @@
     "@apollo/client": "^3.11.8",
     "apollo": "^2.11.1",
     "apollo-server": "^3.13.0",
-    "graphql": "^16.9.0"
+    "graphql": "^16.9.0",
+    "mongodb": "^6.9.0"
   }
 }
