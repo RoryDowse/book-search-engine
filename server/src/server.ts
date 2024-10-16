@@ -7,8 +7,6 @@ import { expressMiddleware } from '@apollo/server/express4'; // Import Apollo's 
 import { typeDefs, resolvers } from './schemas/index.js'; // Import GraphQL type definitions (typeDefs) and resolvers (functions to resolve GraphQL queries)
 import { authenticateToken } from './utils/auth.js'; // Import the authentication middleware for handling user authentication via tokens
 import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename); 
 
 // Create an instance of ApolloServer with the typeDefs and resolvers
 const server = new ApolloServer({
@@ -37,10 +35,10 @@ const startApolloServer = async () => {
 
   // Serve static assets (for example, a React build) if in production mode
   if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../client/dist'))); // Serve static files from the React build directory
+    app.use(express.static('../client/dist')); // Serve static files from the React build directory
 
     app.get('*', (_req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, '../client/dist/index.html')); // Send index.html for all other routes (client-side routing)
+      res.sendFile('../client/dist/index.html'); // Send index.html for all other routes (client-side routing)
     });
   }
 
