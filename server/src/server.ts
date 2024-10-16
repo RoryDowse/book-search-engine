@@ -66,9 +66,9 @@ import { ApolloServer } from '@apollo/server'; // Note: Import from @apollo/serv
 import { expressMiddleware } from '@apollo/server/express4'; // Import Apollo's Express middleware for integrating ApolloServer with Express
 import { typeDefs, resolvers } from './schemas/index.js'; // Import GraphQL type definitions (typeDefs) and resolvers (functions to resolve GraphQL queries)
 import { authenticateToken } from './utils/auth.js'; // Import the authentication middleware for handling user authentication via tokens
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename); 
+// import { fileURLToPath } from 'url';
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename); 
 
 // Create an instance of ApolloServer with the typeDefs and resolvers
 const server = new ApolloServer({
